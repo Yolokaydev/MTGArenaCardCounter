@@ -14,7 +14,7 @@ let uniqueRares = {};
 let uniqueMythics = {};
 
 // Read the CSV file and process each line
-fs.createReadStream("collection.csv")
+fs.createReadStream("collection2.csv")
   .pipe(csv({ separator: ";" })) // Use the appropriate separator
   .on("data", (row) => {
     // Assuming the rarity column is named 'Rarity' and count column is named 'Count'
