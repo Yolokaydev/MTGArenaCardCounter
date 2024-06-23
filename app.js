@@ -1,57 +1,50 @@
-const fs = require("fs");
-const csv = require("csv-parser");
+import fs from "fs";
+import csv from "csv-parser";
 
-// Define counters for each rarity and for unique entities
 let commonCount = 0;
 let uncommonCount = 0;
 let rareCount = 0;
 let mythicCount = 0;
 
-// Define objects to keep track of unique entities for each rarity
-let uniqueCommons = {};
-let uniqueUncommons = {};
-let uniqueRares = {};
-let uniqueMythics = {};
+const uniqueCommons = new Set();
+const uniqueUncommons = new Set();
+const uniqueRares = new Set();
+const uniqueMythics = new Set();
 
-// Read the CSV file and process each line
-fs.createReadStream("collection2.csv")
-  .pipe(csv({ separator: ";" })) // Use the appropriate separator
+fs.createReadStream("collection.csv")
+  .pipe(csv({ separator: ";" }))
   .on("data", (row) => {
-    // Assuming the rarity column is named 'Rarity' and count column is named 'Count'
-    const rarity = row["Rarity"].toLowerCase(); // Convert to lowercase for case-insensitivity
-    const count = parseInt(row["Count"]); // Parse count to integer
-    const name = row["Name"]; // Get the name of the entity
+    const rarity = row["Rarity"].toLowerCase();
+    const count = parseInt(row["Count"], 10);
+    const name = row["Name"];
 
-    // Increment the corresponding count
     switch (rarity) {
       case "common":
         commonCount += count;
-        uniqueCommons[name] = true;
+        uniqueCommons.add(name);
         break;
       case "uncommon":
         uncommonCount += count;
-        uniqueUncommons[name] = true;
+        uniqueUncommons.add(name);
         break;
       case "rare":
         rareCount += count;
-        uniqueRares[name] = true;
+        uniqueRares.add(name);
         break;
       case "mythic":
         mythicCount += count;
-        uniqueMythics[name] = true;
+        uniqueMythics.add(name);
         break;
       default:
         break;
     }
   })
   .on("end", () => {
-    // Calculate the number of unique entities for each rarity
-    const uniqueCommonCount = Object.keys(uniqueCommons).length;
-    const uniqueUncommonCount = Object.keys(uniqueUncommons).length;
-    const uniqueRareCount = Object.keys(uniqueRares).length;
-    const uniqueMythicCount = Object.keys(uniqueMythics).length;
+    const uniqueCommonCount = uniqueCommons.size;
+    const uniqueUncommonCount = uniqueUncommons.size;
+    const uniqueRareCount = uniqueRares.size;
+    const uniqueMythicCount = uniqueMythics.size;
 
-    // Print out the counts
     console.log("Common count:", commonCount);
     console.log("Uncommon count:", uncommonCount);
     console.log("Rare count:", rareCount);
